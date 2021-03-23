@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import getPosts from '../../services/posts';
 import Post from './Post'
 import CreatePost from './CreatePost';
+import Loader from '../Loader/Loader';
 
 const Lister = () => {
 
@@ -15,25 +16,42 @@ const Lister = () => {
 		});
 	}, []);
 
-	return <div>TODO - wire up lister component</div>
+	/* code added */
+	const noPosts = allPosts.length === 0;
 
 	const onDeletePost = (id) => {
-		// TODO: implement
-	}
+		/* code added */
+		setPosts(allPosts.filter((post) => post.id !== id));
+	};
 
-	const onCreatePost = post => {
-		// TODO: implement
-	}
-
-	// TODO: implement render method, using Post and CreatePost e.g.
-	//				...
-	// 				<div className="postList">
-	//					...
-	//					<CreatePost />
-	// 				</div>
-	//				...
-
-
+	const onCreatePost = (post) => {
+		/* code added */
+		setPosts((prev) => [...prev, post]);
+	};
+	/* code added */
+	return (
+		<div className="postList">
+			{loading ? (
+				<Loader />
+			) : (
+				<div className="postList__inner">
+					<CreatePost onCreate={onCreatePost} />
+					<div>
+						{allPosts.map((post) => (
+							<Post
+								key={`${post.title}-${post.author}`}
+								{...post}
+								onDelete={() => onDeletePost(post.id)}
+							/>
+						))}
+						{noPosts && !loading && (
+							<h3 className="text--info">No posts available...</h3>
+						)}
+					</div>
+				</div>
+			)}
+		</div>
+	)
 };
 
 export default Lister;
